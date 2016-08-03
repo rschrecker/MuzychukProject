@@ -1,11 +1,13 @@
 def MuzychukS1_1Graph(n, d, List=False, phi='random', sigma='random'):
-    from sage.combinat.designs.block_design import AffineGeometryDesign, ProjectiveGeometryDesign
+    from sage.combinat.designs.block_design import AffineGeometryDesign, \
+    ProjectiveGeometryDesign
     from random import randrange
     from time import time
     t = time()
 
     #build L, L_i and the affine design
-    ProjDesign = ProjectiveGeometryDesign(d, 1, GF(n, 'a'), point_coordinates=False)
+    ProjDesign = \
+    ProjectiveGeometryDesign(d, 1, GF(n, 'a'), point_coordinates=False)
     L = [tuple(line) for line in ProjDesign.blocks()]
     m = ProjDesign.num_points()
     L_i = [0]*m
@@ -61,12 +63,16 @@ def MuzychukS1_1Graph(n, d, List=False, phi='random', sigma='random'):
                     current_phi[(x, line)] = val
                     val+=1
         else:
-            assert type(current_phi) == dict, 'phi must be a dictionary or \'fixed\': alternatively, remove this argument and it will be generated randomly'
-            assert set(current_phi.keys()) == set([(x, line) for x in range(m) for line in L_i[x]]), 'each phi_i must have domain L_i'
+            assert type(current_phi) == dict, \
+            'phi must be a dictionary or \'fixed\': alternatively, \
+            remove this argument and it will be generated randomly'
+            assert set(current_phi.keys()) == set([(x, line) for x in range(m)
+                for line in L_i[x]]), 'each phi_i must have domain L_i'
             for x in range(m):
                 assert m - 2 == len(set([val for (key, val) in current_phi.items() if key[0] == x])), 'each phi_i must be injective'
             for val in current_phi.values():
-                assert val in range(m-1), 'codomain should be {0,..., (n^d - 1)/(n - 1) - 1}'
+                assert val in range(m-1), \
+                'codomain should be {0,..., (n^d - 1)/(n - 1) - 1}'
         for x in range(m):
             for line in L_i[x]:
                 current_phi[(x, line)] = ParClasses[current_phi[(x, line)]]
@@ -87,7 +93,10 @@ def MuzychukS1_1Graph(n, d, List=False, phi='random', sigma='random'):
                             del temp[rand]
                         for i in line[1:]:
                             if i != j:
-                                new_items = [((i, j, key[2]), current_sigma[(line[0], j, tuple(val))]) for (key, val) in current_sigma.items() if key[:2] == (i, line[0])]
+                                new_items = [((i, j, key[2]), \
+                                    current_sigma[(line[0], j, tuple(val))]) \
+                                    for (key, val) in current_sigma.items() \
+                                    if key[:2] == (i, line[0])]
                                 current_sigma.update(new_items)
         elif current_sigma == 'fixed':
             current_sigma = {}
@@ -102,16 +111,26 @@ def MuzychukS1_1Graph(n, d, List=False, phi='random', sigma='random'):
                             val +=1
                         for i in line[1:]:
                             if i != j:
-                                current_sigma[(i, j, tuple)] ### do this ###
+                                new_items = [((i, j, key[2]), \
+                                    current_sigma[(line[0], j, tuple(val))]) \
+                                    for (key, val) in current_sigma.items() \
+                                    if key[:2] == (i, line[0])]
+                                current_sigma.update(new_items)
         else:
-            assert type(current_sigma) == dict, 'sigma must be a dictionary or \'fixed\': alternatively, remove this argument and it will be generated randomly'
+            assert type(current_sigma) == dict, \
+            'sigma must be a dictionary or \'fixed\': alternatively, \
+            remove this argument and it will be generated randomly'
             correctKeys =      [(line[0], line[1], n) for line in L.edges() for n in range(len(ParClasses)) if ParClasses[n] in current_phi[(line[1], line)]]
             correctKeys.extend([(line[1], line[0], n) for line in L.edges() for n in range(len(ParClasses)) if ParClasses[n] in current_phi[(line[0], line)]])
             ### ^no ###
-            assert set(current_sigma.keys()) == set(correct(Keys)), 'the keys in sigma must be {(i, j, n) | i, j in line in L, and n in phi[i, line]}'
+            assert set(current_sigma.keys()) == set(correct(Keys)), \
+            'the keys in sigma must be \
+            {(i, j, n) | i, j in line in L, and n in phi[i, line]}'
             for key in current_sigma.keys():
-                assert key == sigma[(key[1], key[0], current_sigma[key])], 'sigma_ij must be (sigma_ji)^(-1)' ### no ###
-            current_sigma = dict(((i, j, tuple(ParClasses[x]), ParClasses[y]) for ((i, j, x), y) in current_sigma.items()))
+                assert key == sigma[(key[1], key[0], current_sigma[key])], \
+                'sigma_ij must be (sigma_ji)^(-1)' ### no ###
+            current_sigma = dict(((i, j, tuple(ParClasses[x]), ParClasses[y]) \
+                                  for ((i, j, x), y) in current_sigma.items()))
         print 'finished sigma at %f' % (time() - t)
 
         #build V
