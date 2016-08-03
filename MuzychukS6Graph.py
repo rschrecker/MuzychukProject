@@ -1,23 +1,34 @@
 def MuzychukS6Graph(n, d, List=False, phi='random', sigma='random'):
     '''
-    Muzychuk strongly regular graph on n^d * ((n^d-1)/(n-1)+1) vertices, denoted S6 in [Mu07].
+    Muzychuk strongly regular graph on n^d * ((n^d-1)/(n-1)+1) vertices, denoted
+    S6 in [Mu07].
     n is a prime power.
     n is even or d is odd.
     List defaults to False and is either:
         - False: a single graph is returned
-        - a natural number N: returns a list of graphs of length N. In this case phi, sigma can each be given as lists, or as normal (in which case the same behaviour will be repeated for each graph generated)
+        - a natural number N: a list of graphs of length N is generated. In this
+          case phi, sigma can each be given as lists, or as normal (in which
+          case the same behaviour will be repeated for each graph generated)
     phi defaults to random and is either:
         - 'random': phi_i are generated at random.
         - 'fixed': this will generate the same phi_i every time.
-        - A dictionary describing the phi_i functions in Muzychuk's description: phi[(i, line)] should  be in {0,..., (n^d-1)/(n-1) - 1}. Note line is a tuple in ascending order. Also note each phi_i must be injective.
+        - A dictionary describing the phi_i functions in Muzychuk's description:
+          phi[(i, line)] should  be in {0,..., (n^d-1)/(n-1) - 1}. Note line is
+          a tuple in ascending order. Also note each phi_i must be injective.
     sigma is similar, either:
         - 'random': sigma_ij are generated at random (from phi if phi is given).
-        - 'fixed': this will generate the same sigma_ij every time the same phi_i are used.
-        - A dictionary describing the sigma_ij: sigma[(i, j, n)] = m where i, j in some line in L, n in phi[(i, line)], m in phi[(j, line)]. Note a value must be given for all keys of this form. Also note sigma_ij must be (sigma_ji)^(-1).
+        - 'fixed': this will generate the same sigma_ij every time the same
+           phi_i are used.
+        - A dictionary describing the sigma_ij: sigma[(i, j, n)] = m where i, j
+          in some line in L, n in phi[(i, line)], m in phi[(j, line)]. Note a
+          value must be given for all keys of this form. Also note sigma_ij
+          must be (sigma_ji)^(-1).
 
     EXAMPLE:
         sage: MuzychukS6Graph(3, 3).is_strongly_regular(parameters=True)
         (378, 116, 34, 36)
+        sage: MuzychukS6Graph(3, 3, 4, 'fixed') #returns 4 strongly regular
+        graphs, all generated using the same phi and random sigma
     '''
     ### TO DO: optimise
     ###        add option to return phi, sigma?
@@ -104,12 +115,19 @@ def MuzychukS6Graph(n, d, List=False, phi='random', sigma='random'):
                     current_phi[(x, line)] = val
                     val+=1
         else:
-            assert type(current_phi) == dict, 'phi must be a dictionary or \'fixed\': alternatively, remove this argument and it will be generated randomly'
-            assert set(current_phi.keys()) == set([(x, line) for x in range(m) for line in L_i[x]]), 'each phi_i must have domain L_i'
+            assert type(current_phi) == dict, 'phi must be a dictionary or\
+            \'fixed\': alternatively, remove this argument and it will be\
+            generated randomly'
+            assert set(current_phi.keys()) == \
+            set([(x, line) for x in range(m) for line in L_i[x]]), \
+            'each phi_i must have domain L_i'
             for x in range(m):
-                assert m - 2 == len(set([val for (key, val) in current_phi.items() if key[0] == x])), 'each phi_i must be injective'
+                assert m - 2 == len(set([val
+                    for (key, val) in current_phi.items() if key[0] == x])), \
+                'each phi_i must be injective'
             for val in current_phi.values():
-                assert val in range(m-1), 'codomain should be {0,..., (n^d - 1)/(n - 1) - 1}'
+                assert val in range(m-1), \
+                'codomain should be {0,..., (n^d - 1)/(n - 1) - 1}'
         for x in range(m):
             for line in L_i[x]:
                 current_phi[(x, line)] = ParClasses[current_phi[(x, line)]]
@@ -138,13 +156,23 @@ def MuzychukS6Graph(n, d, List=False, phi='random', sigma='random'):
                         current_sigma[(i, j, tuple(hyp))] = val
                         current_sigma[(j, i, tuple(val))] = hyp
         else:
-            assert type(current_sigma) == dict, 'sigma must be a dictionary or \'fixed\': alternatively, remove this argument and it will be generated randomly'
-            correctKeys =      [(line[0], line[1], n) for line in L.edges() for n in range(len(ParClasses)) if ParClasses[n] in current_phi[(line[1], line)]]
-            correctKeys.extend([(line[1], line[0], n) for line in L.edges() for n in range(len(ParClasses)) if ParClasses[n] in current_phi[(line[0], line)]])
-            assert set(current_sigma.keys()) == set(correct(Keys)), 'the keys in sigma must be {(i, j, n) | i, j in line in L, and n in phi[i, line]}'
+            assert type(current_sigma) == dict, \
+            'sigma must be a dictionary or \'fixed\': alternatively, \
+            remove this argument and it will be generated randomly'
+            correctKeys =      [(line[0], line[1], n) for line in L.edges()
+                                for n in range(len(ParClasses)) if
+                                ParClasses[n] in current_phi[(line[1], line)]]
+            correctKeys.extend([(line[1], line[0], n) for line in L.edges()
+                                for n in range(len(ParClasses)) if
+                                ParClasses[n] in current_phi[(line[0], line)]])
+            assert set(current_sigma.keys()) == set(correct(Keys)), \
+            'the keys in sigma must be \
+            {(i, j, n) | i, j in line in L, and n in phi[i, line]}'
             for key in current_sigma.keys():
-                assert key == sigma[(key[1], key[0], current_sigma[key])], 'sigma_ij must be (sigma_ji)^(-1)'
-            current_sigma = dict(((i, j, tuple(ParClasses[x])), ParClasses[y]) for ((i, j, x), y) in current_sigma.items())
+                assert key == sigma[(key[1], key[0], current_sigma[key])], \
+                'sigma_ij must be (sigma_ji)^(-1)'
+            current_sigma = dict(((i, j, tuple(ParClasses[x])), ParClasses[y])
+                                 for ((i, j, x), y) in current_sigma.items())
         print 'finished sigma at %f' % (time() - t)
 
         #build V
@@ -152,7 +180,8 @@ def MuzychukS6Graph(n, d, List=False, phi='random', sigma='random'):
         for (i, j) in L.edges(labels=False):
             for hyp in current_phi[(i, (i, j))]:
                 for x in hyp:
-                    newEdges = [((i, x), (j, y)) for y in current_sigma[(i, j, tuple(hyp))]]
+                    newEdges = [((i, x), (j, y))
+                                for y in current_sigma[(i, j, tuple(hyp))]]
                     edges.extend(newEdges)
         V = Graph(edges)
         print 'finished V at %f' % (time() - t)
@@ -161,15 +190,19 @@ def MuzychukS6Graph(n, d, List=False, phi='random', sigma='random'):
         D_i = [0]*m
         for x in range(m):
             D_i[x] = sum([E[tuple(current_phi[x, line][0])] for line in L_i[x]])
-        F_i = [1 - D_i[x] - ones/v for x in range(m)] #as the sum of (1/v)*J_\Omega_i, D_i, F_i is identity
+        F_i = [1 - D_i[x] - ones/v for x in range(m)]
+        #as the sum of (1/v)*J_\Omega_i, D_i, F_i is identity
         A_i = [0]*m
         for x in range(m):
-            A_i[x] = ((v-k)/v)*ones - k*F_i[x] #we know A_i = k''*(1/v)*J_\Omega_i + r''*D_i + s''*F_i, and (k'', s'', r'') = (v - k, 0, -k)
+            A_i[x] = ((v-k)/v)*ones - k*F_i[x]
+            #we know A_i = k''*(1/v)*J_\Omega_i + r''*D_i + s''*F_i,
+            #and (k'', s'', r'') = (v - k, 0, -k)
         print 'finished D, F and A at %f' % (time() - t)
 
         #add the edges of the graph of B to V, and add the graph to the list
         for i in range(m):
-            V.add_edges([((i, x), (i, y)) for x in range(n^d) for y in range(n^d) if not A_i[i][(x, y)]]) ### just make one list?
+            V.add_edges([((i, x), (i, y)) for x in range(n^d)
+                         for y in range(n^d) if not A_i[i][(x, y)]])
         Glist[I] = V
         print 'finished cycle at %f' % (time() - t)
 
