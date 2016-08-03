@@ -144,7 +144,7 @@ def MuzychukS6Graph(n, d, List=False, phi='random', sigma='random'):
             assert set(current_sigma.keys()) == set(correct(Keys)), 'the keys in sigma must be {(i, j, n) | i, j in line in L, and n in phi[i, line]}'
             for key in current_sigma.keys():
                 assert key == sigma[(key[1], key[0], current_sigma[key])], 'sigma_ij must be (sigma_ji)^(-1)'
-            current_sigma = dict(((i, j, ParClasses[x]), ParClasses[y]) for ((i, j, x), y) in current_sigma.items())
+            current_sigma = dict(((i, j, tuple(ParClasses[x])), ParClasses[y]) for ((i, j, x), y) in current_sigma.items())
         print 'finished sigma at %f' % (time() - t)
 
         #build V
