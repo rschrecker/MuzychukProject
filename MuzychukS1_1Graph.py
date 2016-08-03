@@ -69,7 +69,9 @@ def MuzychukS1_1Graph(n, d, List=False, phi='random', sigma='random'):
             assert set(current_phi.keys()) == set([(x, line) for x in range(m)
                 for line in L_i[x]]), 'each phi_i must have domain L_i'
             for x in range(m):
-                assert m - 2 == len(set([val for (key, val) in current_phi.items() if key[0] == x])), 'each phi_i must be injective'
+                assert m - 2 == len(set([val for (key, val) \
+                    in current_phi.items() if key[0] == x])), \
+                'each phi_i must be injective'
             for val in current_phi.values():
                 assert val in range(m-1), \
                 'codomain should be {0,..., (n^d - 1)/(n - 1) - 1}'
@@ -141,7 +143,8 @@ def MuzychukS1_1Graph(n, d, List=False, phi='random', sigma='random'):
                 for j in line[:index]:
                     for hyp in current_phi[(i, line)]:
                         for x in hyp:
-                            newEdges = [((i, x), (j, y)) for y in current_sigma[(i, j, tuple(hyp))]]
+                            newEdges = [((i, x), (j, y)) for y \
+                                        in current_sigma[(i, j, tuple(hyp))]]
                             edges.extend(newEdges)
         V = Graph(edges)
         print 'finished V at %f' % (time() - t)
