@@ -5,7 +5,7 @@ def MuzychukS6Graph(n, d, List=False, phi='random', sigma='random'):
     n is even or d is odd.
     List defaults to False and is either:
         - False: a single graph is returned
-        - a natural number N: a list of graphs of length N is generated.
+        - a natural number N: returns a list of graphs of length N. In this case phi, sigma can each be given as lists, or as normal (in which case the same behaviour will be repeated for each graph generated)
     phi defaults to random and is either:
         - 'random': phi_i are generated at random.
         - 'fixed': this will generate the same phi_i every time.
